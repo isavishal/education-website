@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}
+Sign up
+{% endblock %}
+{% block content %}
+<center>
+<h1>
+<b>Sign up</b>
+</h1>
+</center>
+<div class="module">
+<p>Enter your details to create an account:</p>
+<form action="" method="post">
+{{ form.as_p }}
+{% csrf_token %}
+<br>
+<center>
+<button class="w3-button w3-green" input type="submit">
+<p>Create my account</p></button>
+</center>
+</form>
+</div>
+{% endblock %}

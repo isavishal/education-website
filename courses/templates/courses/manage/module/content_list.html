@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load course %}
+{% block title %}
+Module {{ module.order|add:1 }}: {{ module.title }}
+{% endblock %}
+{% block content %}
+{% with course=module.course %}
+<center>
+<h1>
+    Course <b>"{{ course.title }}"</b>
+</h1>
+</center>
+
+<div class="w3-sidebar w3-large w3-black" style="width:200px;">
+    <center>
+        <h3>
+            MODULES
+        </h3>
+    </center>
+    <ul id="modules" style="list-style: none;">
+        {% for m in course.modules.all %}
+        <li data-id="{{ m.id }}" {% if m == module %} class="selected"{% endif %} class="w3-container">
+            <a href="{% url "module_content_list" m.id %}" style="text-decoration:none;">
+                <span>
+                    Module <span class="order">{{ m.order|add:1 }}</span>
+                </span>
+                <br>
+                {{ m.title }}
+            </a>
+        </li>
+        {% empty %}
+        <li>
+            No modules yet.
+        </li>
+        {% endfor %}
+    </ul>
+    <p>
+        <center><a href="{% url "course_module_update" course.id %}" style="text-decoration:none;">
+            <p><button class="w3-button w3-green" input type="submit">
+                Edit modules
+            </button></p></center>
+        </a>
+    </p>
+</div>
+<div class="w3-main" style="margin-left:220px">
+    <div class="module">
+        <h2>
+            <b>
+                Module {{ module.order|add:1 }}: {{ module.title }}
+            </b>
+        </h2>
+        <h3>
+            Module contents:
+        </h3>
+    <div id="module-contents">
+        {% for content in module.contents.all %}
+        <div data-id="{{ content.id }}">
+            <button class="w3-button w3-white w3-border">
+                {% with item=content.item %}
+                <p>
+                    {{ item }} ({{ item|model_name }})
+                </p>
+                <button class="w3-button w3-green">
+                    <a href="{% url "module_content_update" module.id item|model_name item.id %}" style="text-decoration:none;">
+                        Edit
+                    </a>
+                </button>
+                <button class="w3-button w3-green" input type="submit">
+                    <form action="{% url "module_content_delete" content.id %}"method="post">
+                        Delete
+                        {% csrf_token %}
+                    </form>
+                </button>
+            </button>
+        </div>
+        {% endwith %}
+    </div>
+    {% empty %}
+    <p>
+        This module has no contents yet.
+    </p>
+    {% endfor %}
+    <h3>
+        Add new content:
+    </h3>
+    <ul class="content-types" style="list-style-type:none;">
+        <button class="w3-button w3-green" input type="submit">
+            <center>
+                <li>
+                    <a href="{% url "module_content_create" module.id "text" %}" style="text-decoration:none;">
+                        Text
+                    </a>
+                </li>
+            </center>
+        </button>
+        <button class="w3-button w3-green" input type="submit">
+            <center>
+                <li>
+                    <a href="{% url "module_content_create" module.id "image" %}" style="text-decoration:none;">
+                        Image
+                    </a>
+                </li>
+            </center>
+        </button>
+        <button class="w3-button w3-green" input type="submit">
+            <center>
+                <li>
+                    <a href="{% url "module_content_create" module.id "video" %}" style="text-decoration:none;">
+                        Video
+                    </a>
+                </li>
+            </center>
+        </button>
+        <button class="w3-button w3-green" input type="submit">
+            <center>
+                <li>
+                    <a href="{% url "module_content_create" module.id "file" %}" style="text-decoration:none;">
+                        File
+                    </a>
+                </li>
+            </center>
+        </button>
+    </ul>
+    {% endwith %}
+</div>
+
+{% block domready %}
+$('#modules').sortable({stop: function(event, ui) {modules_order = {};
+$('#modules').children().each(function(){// update the order field
+$(this).find('.order').text($(this).index() + 1);
+// associate the module's id with its order
+modules_order[$(this).data('id')] = $(this).index();});
+$.ajax({type: 'POST',url: '{% url "module_order" %}',contentType: 'application/json; charset=utf-8',dataType: 'json',data: JSON.stringify(modules_order)});}});
+$('#module-contents').sortable({stop: function(event, ui) {contents_order = {};
+$('#module-contents').children().each(function(){
+// associate the module's id with its order
+contents_order[$(this).data('id')] = $(this).index();});
+$.ajax({type: 'POST',url: '{% url "content_order" %}',contentType: 'application/json; charset=utf-8',dataType: 'json',data: JSON.stringify(contents_order),});}});
+{% endblock %}

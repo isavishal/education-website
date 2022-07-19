@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}
+{% if subject %}
+{{ subject.title }} courses
+{% else %}
+All courses
+{% endif %}
+{% endblock %}
+{% block content %}
+<h1><center><b>
+{% if subject %}
+{{ subject.title }} courses
+{% else %}
+All Courses
+{% endif %}
+</b>
+</center>
+</h1>
+<div class="contents w3-sidebar w3-gray w3-padding">
+<font color="white">
+
+<h3><b>Subjects</b></h3>
+<ul id="modules" style="list-style-type:none;">
+<li {% if not subject %}class="selected"{% endif %}>
+<a href="{% url "course_list" %}" style="text-decoration:none;">All</a>
+</li>
+{% for s in subjects %}
+<li {% if subject == s %}class="selected"{% endif %}>
+<a href="{% url "course_list_subject" s.slug %}" style="text-decoration:none;">
+<b><u><font size="4px" color="blue">{{ s.title }}</font></u></b>
+<br><span>{{ s.total_courses }} Courses</span>
+</a>
+</li>
+{% endfor %}
+</ul>
+</font>
+</div>
+<div class="w3-main" style="margin-left:220px">
+<div class="module">
+{% for course in courses %}
+{% with subject=course.subject %}
+<h3><a href="{% url "course_detail" course.slug %}" style="text-decoration:none;">
+<font color="green"><b>{{ course.title }}</b></font></a></h3>
+<p>
+<a href="{% url "course_list_subject" subject.slug %}" style="text-decoration:none;">
+<font color="green ">{{ subject }}</font></a> -- 
+{{ course.total_modules }} modules.
+Instructor: <b>{{ course.owner.get_full_name }}</b>
+</p>
+{% endwith %}
+{% endfor %}
+</div>
+</div>
+{% endblock %}

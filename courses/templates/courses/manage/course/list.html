@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}My courses{% endblock %}
+{% block content %}
+<h1><b>My courses</b></h1>
+<div class="module">
+{% for course in object_list %}
+<div class="course-info w3-btn w3-white w3-border w3-round-large">
+<h3>{{ course.title }}</h3>
+<p>
+<a href="{% url "course_edit" course.id %}" style="text-decoration: none;"><button class="w3-button w3-green">Edit</button></a>
+<a href="{% url "course_delete" course.id %}" style="text-decoration: none;"><button class="w3-button w3-green">Delete</button></a>
+<a href="{% url "course_module_update" course.id %}" style="text-decoration: none;"><button class="w3-button w3-green">Edit modules</button></a>
+{% if course.modules.count > 0 %}
+<a href="{% url "module_content_list" course.modules.first.id %}" style="text-decoration: none;"><button class="w3-button w3-green">Manage contents</button></a>
+{% endif %}
+</p>
+</div>
+{% empty %}
+<p>You haven't created any courses yet.</p>
+{% endfor %}
+<br>
+<br>
+<center>
+<button class="w3-button w3-black">
+<a href="{% url "course_create" %}" style="text-decoration:none">Create New Course</a>
+</button>
+</center>
+</div>
+{% endblock %}

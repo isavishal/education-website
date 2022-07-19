@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ object.title }}
+{% endblock %}
+{% block content %}
+{% with subject=course.subject %}
+<center>
+<h1><b>
+{{ object.title }}</b>
+</h1>
+</center>
+<hr>
+<div class="module w3-padding">
+<h2><b>Overview</b></h2>
+<p>
+<a href="{% url "course_list_subject" subject.slug %}" style="text-decoration:none;">
+<font color="green">
+<b>
+{{ subject.title }}
+</b>
+</font>
+</a> -- <b>{{ course.modules.count }}</b> modules.Instructor: <b>{{ course.owner.get_full_name }}</b>
+</p>
+<br>
+{{ object.overview|linebreaks }}
+{% if request.user.is_authenticated %}
+<form action="{% url "student_enroll_course" %}" method="post">
+{{ enroll_form }}
+{% csrf_token %}
+<br>
+<button class="w3-button w3-green" input type="submit">Enroll now
+</button>
+</form>
+{% else %}
+<button class="w3-button w3-green" input type="submit">
+<a href="{% url "student_registration" %}" style="text-decoration:none;">
+Register to enroll
+</a>
+</button>
+{% endif %}
+</div>
+{% endwith %}
+{% endblock %}
